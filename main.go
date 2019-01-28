@@ -42,8 +42,8 @@ func main() {
 		{"　上越", "https://transit.yahoo.co.jp/traininfo/detail/3/0/"},
 		{"　北陸", "https://transit.yahoo.co.jp/traininfo/detail/624/0/"},
 		{"東海道", "https://transit.yahoo.co.jp/traininfo/detail/7/0/"},
-		{"　北陸", "https://transit.yahoo.co.jp/traininfo/detail/8/0/"},
-		{"　北陸", "https://transit.yahoo.co.jp/traininfo/detail/410/0/"}}
+		{"　山陽", "https://transit.yahoo.co.jp/traininfo/detail/8/0/"},
+		{"　九州", "https://transit.yahoo.co.jp/traininfo/detail/410/0/"}}
 
 	for _, a := range args {
 		wg.Add(1)
