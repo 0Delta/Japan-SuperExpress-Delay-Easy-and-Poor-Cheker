@@ -33,6 +33,8 @@ func sub(url string) string {
 	return ret[0][0]
 }
 
+var REG = regexp.MustCompile(`<meta property="og:description" content=.*/>`)
+
 func main() {
 	var wg sync.WaitGroup
 	args := [][]string{
@@ -65,8 +67,7 @@ func main() {
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "ERR : Read")
 			}
-			r := regexp.MustCompile(`<meta property="og:description" content=.*/>`)
-			ret := r.FindAllStringSubmatch(string(body), 1)
+			ret := REG.FindAllStringSubmatch(string(body), 1)
 			fmt.Println(place + ret[0][0])
 			// return ret[0][0]
 		}(a[0], a[1])
