@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 	"sync"
 	"time"
@@ -53,16 +54,16 @@ func main() {
 
 			req, err := http.NewRequest("GET", url, nil)
 			if err != nil {
-				fmt.Println("ERR : Request")
+				fmt.Fprintln(os.Stderr, "ERR : Request")
 			}
 			res, err := http.DefaultClient.Do(req)
 			if err != nil {
-				fmt.Println("ERR : Do")
+				fmt.Fprintln(os.Stderr, "ERR : Do")
 			}
 			defer res.Body.Close()
 			body, err := ioutil.ReadAll(res.Body)
 			if err != nil {
-				fmt.Println("ERR : Read")
+				fmt.Fprintln(os.Stderr, "ERR : Read")
 			}
 			r := regexp.MustCompile(`<meta property="og:description" content=.*/>`)
 			ret := r.FindAllStringSubmatch(string(body), 1)
