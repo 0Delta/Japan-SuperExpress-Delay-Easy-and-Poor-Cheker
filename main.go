@@ -14,25 +14,6 @@ import (
 	"time"
 )
 
-func sub(url string) string {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return "ERR : Request"
-	}
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "ERR : Do"
-	}
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return "ERR : Read"
-	}
-	r := regexp.MustCompile(`<meta property="og:description" content=.*/>`)
-	ret := r.FindAllStringSubmatch(string(body), 1)
-	return ret[0][0]
-}
-
 var REG = regexp.MustCompile(`<meta property="og:description" content=.*/>`)
 
 func main() {
