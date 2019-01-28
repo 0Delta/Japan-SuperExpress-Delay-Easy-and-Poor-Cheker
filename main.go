@@ -9,6 +9,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"sync"
+	"time"
 )
 
 func sub(url string) string {
@@ -31,13 +33,41 @@ func sub(url string) string {
 }
 
 func main() {
-	fmt.Println("北海道" + sub("https://transit.yahoo.co.jp/traininfo/detail/637/0/"))
-	fmt.Println("　東北" + sub("https://transit.yahoo.co.jp/traininfo/detail/1/0/"))
-	fmt.Println("　秋田" + sub("https://transit.yahoo.co.jp/traininfo/detail/6/0/"))
-	fmt.Println("　山形" + sub("https://transit.yahoo.co.jp/traininfo/detail/5/0/"))
-	fmt.Println("　上越" + sub("https://transit.yahoo.co.jp/traininfo/detail/3/0/"))
-	fmt.Println("　北陸" + sub("https://transit.yahoo.co.jp/traininfo/detail/624/0/"))
-	fmt.Println("東海道" + sub("https://transit.yahoo.co.jp/traininfo/detail/7/0/"))
-	fmt.Println("　山陽" + sub("https://transit.yahoo.co.jp/traininfo/detail/8/0/"))
-	fmt.Println("　九州" + sub("https://transit.yahoo.co.jp/traininfo/detail/410/0/"))
+	var wg sync.WaitGroup
+	args := [][]string{
+		{"北海道", "https://transit.yahoo.co.jp/traininfo/detail/637/0/"},
+		{"　東北", "https://transit.yahoo.co.jp/traininfo/detail/1/0/"},
+		{"　秋田", "https://transit.yahoo.co.jp/traininfo/detail/6/0/"},
+		{"　山形", "https://transit.yahoo.co.jp/traininfo/detail/5/0/"},
+		{"　上越", "https://transit.yahoo.co.jp/traininfo/detail/3/0/"},
+		{"　北陸", "https://transit.yahoo.co.jp/traininfo/detail/624/0/"},
+		{"東海道", "https://transit.yahoo.co.jp/traininfo/detail/7/0/"},
+		{"　北陸", "https://transit.yahoo.co.jp/traininfo/detail/8/0/"},
+		{"　北陸", "https://transit.yahoo.co.jp/traininfo/detail/410/0/"}}
+
+	for _, a := range args {
+		wg.Add(1)
+		go func(place string, url string) {
+			req, err := http.NewRequest("GET", url, nil)
+			if err != nil {
+				fmt.Println("ERR : Request")
+			}
+			res, err := http.DefaultClient.Do(req)
+			if err != nil {
+				fmt.Println("ERR : Do")
+			}
+			defer res.Body.Close()
+			body, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				fmt.Println("ERR : Read")
+			}
+			r := regexp.MustCompile(`<meta property="og:description" content=.*/>`)
+			ret := r.FindAllStringSubmatch(string(body), 1)
+			fmt.Println(place + ret[0][0])
+			// return ret[0][0]
+			wg.Done()
+		}(a[0], a[1])
+		time.Sleep(10 * time.Millisecond)
+	}
+	wg.Wait()
 }
