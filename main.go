@@ -48,6 +48,9 @@ func main() {
 	for _, a := range args {
 		wg.Add(1)
 		go func(place string, url string) {
+
+			defer wg.Done()
+
 			req, err := http.NewRequest("GET", url, nil)
 			if err != nil {
 				fmt.Println("ERR : Request")
@@ -65,7 +68,6 @@ func main() {
 			ret := r.FindAllStringSubmatch(string(body), 1)
 			fmt.Println(place + ret[0][0])
 			// return ret[0][0]
-			wg.Done()
 		}(a[0], a[1])
 		time.Sleep(10 * time.Millisecond)
 	}
